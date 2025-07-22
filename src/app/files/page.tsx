@@ -147,10 +147,10 @@ export default function FilesPage() {
                           </div>
                           <div>
                             <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              {file.originalName}
+                              {file.name}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {file.name}
+                              Original: {file.originalName}
                             </div>
                           </div>
                         </div>
@@ -162,11 +162,16 @@ export default function FilesPage() {
                         {formatDate(file.uploadDate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <Link
+                          href={`/view/${encodeURIComponent(file.name)}`}
+                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3"
+                        >
+                          View
+                        </Link>
                         <button
                           className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
                           onClick={() => {
-                            // In a real app, you'd implement download functionality
-                            alert('Download functionality would be implemented here');
+                            window.open(`/api/download/${encodeURIComponent(file.name)}`, '_blank');
                           }}
                         >
                           Download

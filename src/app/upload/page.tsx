@@ -176,8 +176,13 @@ export default function UploadPage() {
                 <div>{uploadResult.message}</div>
                 {uploadResult.success && uploadResult.fileName && (
                   <div className="mt-2 text-xs">
-                    File: {uploadResult.fileName}
-                    {uploadResult.fileSize && ` (${formatFileSize(uploadResult.fileSize)})`}
+                    <div><strong>Saved as:</strong> {uploadResult.fileName}</div>
+                    <div className="text-gray-500 dark:text-gray-400 mt-1">
+                      ✅ File organized with date-based naming for better management
+                    </div>
+                    {uploadResult.fileSize && (
+                      <div className="mt-1">Size: {formatFileSize(uploadResult.fileSize)}</div>
+                    )}
                   </div>
                 )}
               </div>

@@ -26,13 +26,13 @@ export async function POST(request: NextRequest) {
 
     // Get file extension and validate
     const fileName = file.name;
-    const fileExtension = fileName.split('.').pop()?.toLowerCase();
+    const fileExt = fileName.split('.').pop()?.toLowerCase();
     
     // Optional: Add file type restrictions
     const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'txt', 'zip'];
-    if (fileExtension && !allowedExtensions.includes(fileExtension)) {
+    if (fileExt && !allowedExtensions.includes(fileExt)) {
       return NextResponse.json(
-        { message: `File type .${fileExtension} is not allowed. Allowed types: ${allowedExtensions.join(', ')}` },
+        { message: `File type .${fileExt} is not allowed. Allowed types: ${allowedExtensions.join(', ')}` },
         { status: 400 }
       );
     }
@@ -43,9 +43,15 @@ export async function POST(request: NextRequest) {
       await mkdir(uploadsDir, { recursive: true });
     }
 
-    // Generate unique filename to prevent conflicts
-    const timestamp = Date.now();
-    const uniqueFileName = `${timestamp}_${fileName}`;
+    // Generate date-based filename to prevent conflicts
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
+    const timestamp = Date.now(); // Add milliseconds for uniqueness
+    const fileExtension = fileName.split('.').pop();
+    const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+    
+    const uniqueFileName = `${dateStr}_${timeStr}_${timestamp}_${fileNameWithoutExt}.${fileExtension}`;
     const filePath = join(uploadsDir, uniqueFileName);
 
     // Convert file to buffer and save

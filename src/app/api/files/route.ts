@@ -24,9 +24,22 @@ export async function GET() {
         const filePath = join(uploadsDir, fileName);
         const stats = await stat(filePath);
         
+        // Extract original filename from date-based naming convention
+        // Format: YYYY-MM-DD_HH-MM-SS_timestamp_originalname.ext
+        const parts = fileName.split('_');
+        let originalName = fileName; // fallback to full filename
+        
+        if (parts.length >= 4) {
+          // Remove date, time, and timestamp parts, keep the rest
+          originalName = parts.slice(3).join('_');
+        } else {
+          // Fallback for old timestamp format: timestamp_originalname.ext
+          originalName = parts.slice(1).join('_') || fileName;
+        }
+        
         return {
           name: fileName,
-          originalName: fileName.split('_').slice(1).join('_'), // Remove timestamp prefix
+          originalName: originalName,
           size: stats.size,
           uploadDate: stats.birthtime,
           modifiedDate: stats.mtime,
