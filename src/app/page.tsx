@@ -69,6 +69,14 @@ export default function Home() {
           >
             View Files
           </Link>
+          <a
+            className="rounded-full border border-solid border-green-600/[.2] dark:border-green-400/[.2] transition-colors flex items-center justify-center hover:bg-green-50 dark:hover:bg-green-900/[.2] hover:border-green-600/[.4] text-green-600 dark:text-green-400 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto"
+            href="/api/zip-all"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            📦 Download All ZIP
+          </a>
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">

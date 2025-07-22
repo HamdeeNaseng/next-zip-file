@@ -21,6 +21,7 @@ export default function ViewFilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string>('');
+  const [zipLoading, setZipLoading] = useState(false);
 
   useEffect(() => {
     const fetchFileInfo = async () => {
@@ -102,6 +103,49 @@ export default function ViewFilePage() {
     window.open(`/api/download/${encodeURIComponent(filename)}`, '_blank');
   };
 
+  const downloadAllAsZip = async () => {
+    setZipLoading(true);
+    try {
+      const response = await fetch('/api/zip-all');
+      
+      if (response.ok) {
+        // Get the blob from response
+        const blob = await response.blob();
+        
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        
+        // Get filename from response headers or use default
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'all-files.zip';
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+          if (filenameMatch) {
+            filename = filenameMatch[1];
+          }
+        }
+        
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || 'Failed to create ZIP file');
+      }
+    } catch (err) {
+      console.error('Error downloading ZIP:', err);
+      alert('Error downloading files');
+    } finally {
+      setZipLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-8">
@@ -170,6 +214,22 @@ export default function ViewFilePage() {
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
           >
             📥 Download
+          </button>
+          <button
+            onClick={downloadAllAsZip}
+            disabled={zipLoading}
+            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+          >
+            {zipLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Creating ZIP...
+              </>
+            ) : (
+              <>
+                📦 Download All as ZIP
+              </>
+            )}
           </button>
         </div>
 
